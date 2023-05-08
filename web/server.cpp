@@ -14,6 +14,10 @@ private:
     Wt::WLineEdit* secondNumberEdit_;
     Wt::WText* resultText_;
 
+    double getFirstNumber();
+    double getSecondNumber();
+    void updateResult(double result);
+
     void add();
     void subtract();
     void multiplication();
@@ -26,10 +30,10 @@ CalculatorApp::CalculatorApp(const Wt::WEnvironment& env)
     // Set up the UI
     auto container = root()->addWidget(std::make_unique<Wt::WContainerWidget>());
 
-    auto firstNumberLabel = container->addWidget(std::make_unique<Wt::WText>("First number: "));
+    auto firstNumberLabel = container->addWidget(std::make_unique<Wt::WText>("Primer numero: "));
     firstNumberEdit_ = container->addWidget(std::make_unique<Wt::WLineEdit>());
 
-    auto secondNumberLabel = container->addWidget(std::make_unique<Wt::WText>("Second number: "));
+    auto secondNumberLabel = container->addWidget(std::make_unique<Wt::WText>("Segundo numero: "));
     secondNumberEdit_ = container->addWidget(std::make_unique<Wt::WLineEdit>());
 
     auto addButton = container->addWidget(std::make_unique<Wt::WPushButton>("+"));
@@ -46,63 +50,52 @@ CalculatorApp::CalculatorApp(const Wt::WEnvironment& env)
 
     resultText_ = container->addWidget(std::make_unique<Wt::WText>());
 
-    setTitle("Calculator");
+    setTitle("Calculadora");
 }
 
+double CalculatorApp::getFirstNumber()
+{
+    return std::stod(firstNumberEdit_->text().toUTF8());
+}
+double CalculatorApp::getSecondNumber()
+{
+    return std::stod(secondNumberEdit_->text().toUTF8());
+}
+
+void CalculatorApp::updateResult(double result)
+{
+    resultText_->setText("Resultado: " + std::to_string(result));
+    //resultText_->setText("<br>Result: " + std::to_string(result));
+}
 
 void CalculatorApp::add()
 {
-    // Get the numbers from the UI
-    double firstNumber = std::stod(firstNumberEdit_->text().toUTF8());
-    double secondNumber = std::stod(secondNumberEdit_->text().toUTF8());
-
     // Calculate the result
-    double result = firstNumber + secondNumber;
-
+    double result = getFirstNumber() + getSecondNumber();
     // Update the UI with the result
-    resultText_->setText("Result: " + std::to_string(result));
+    updateResult(result);
 }
-
 void CalculatorApp::subtract()
 {
-    // Get the numbers from the UI
-    double firstNumber = std::stod(firstNumberEdit_->text().toUTF8());
-    double secondNumber = std::stod(secondNumberEdit_->text().toUTF8());
-
     // Calculate the result
-    double result = firstNumber - secondNumber;
-
+    double result = getFirstNumber() - getSecondNumber();
     // Update the UI with the result
-    resultText_->setText("Result: " + std::to_string(result));
+    updateResult(result);
 }
-
 void CalculatorApp::multiplication()
 {
-    // Get the numbers from the UI
-    double firstNumber = std::stod(firstNumberEdit_->text().toUTF8());
-    double secondNumber = std::stod(secondNumberEdit_->text().toUTF8());
-
     // Calculate the result
-    double result = firstNumber * secondNumber;
-
+    double result = getFirstNumber() * getSecondNumber();
     // Update the UI with the result
-    resultText_->setText("Result: " + std::to_string(result));
+    updateResult(result);
 }
-
 void CalculatorApp::division()
 {
-    // Get the numbers from the UI
-    double firstNumber = std::stod(firstNumberEdit_->text().toUTF8());
-    double secondNumber = std::stod(secondNumberEdit_->text().toUTF8());
-
     // Calculate the result
-    double result = firstNumber / secondNumber;
-
+    double result = getFirstNumber() / getSecondNumber();
     // Update the UI with the result
-    resultText_->setText("Result: " + std::to_string(result));
+    updateResult(result);
 }
-
-
 
 int main(int argc, char** argv)
 {
