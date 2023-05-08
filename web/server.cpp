@@ -1,52 +1,58 @@
 #include <Wt/WApplication.h>
-#include <Wt/Http/Request.h>
-#include <Wt/Http/Response.h>
-#include <Wt/Http/Client.h>
+#include <Wt/WContainerWidget.h>
 #include <Wt/WLineEdit.h>
-#include <Wt/WBreak.h>
 #include <Wt/WPushButton.h>
+#include <Wt/WText.h>
 
-class MyApplication : public Wt::WApplication
+class CalculatorApp : public Wt::WApplication
 {
 public:
-    MyApplication(const Wt::WEnvironment& env);
+    CalculatorApp(const Wt::WEnvironment& env);
 
 private:
-    Wt::WLineEdit *num1_;
-    Wt::WLineEdit *num2_;
-    Wt::WPushButton *button_;
-    
-    void handleRequest(const Wt::Http::Request& request, Wt::Http::Response& response);
+    Wt::WLineEdit* firstNumberEdit_;
+    Wt::WLineEdit* secondNumberEdit_;
+    Wt::WText* resultText_;
+
+    void calculate();
 };
 
-MyApplication::MyApplication(const Wt::WEnvironment& env)
+CalculatorApp::CalculatorApp(const Wt::WEnvironment& env)
     : Wt::WApplication(env)
 {
-    setTitle("Ejemplo de formulario con dos números");
+    // Set up the UI
+    auto container = root()->addWidget(std::make_unique<Wt::WContainerWidget>());
 
-    num1_ = new Wt::WLineEdit(root());
-    root()->addWidget(new Wt::WBreak());
-    
-    num2_ = new Wt::WLineEdit(root());
-    root()->addWidget(new Wt::WBreak());
-    
-    button_ = new Wt::WPushButton("Enviar números", root());
-    button_->clicked().connect(this, &MyApplication::handleRequest);
+    auto firstNumberLabel = container->addWidget(std::make_unique<Wt::WText>("First number: "));
+    firstNumberEdit_ = container->addWidget(std::make_unique<Wt::WLineEdit>());
+
+    auto secondNumberLabel = container->addWidget(std::make_unique<Wt::WText>("Second number: "));
+    secondNumberEdit_ = container->addWidget(std::make_unique<Wt::WLineEdit>());
+
+    auto calculateButton = container->addWidget(std::make_unique<Wt::WPushButton>("Calculate"));
+    calculateButton->clicked().connect(this, &CalculatorApp::calculate);
+
+    resultText_ = container->addWidget(std::make_unique<Wt::WText>());
+
+    setTitle("Calculator");
 }
 
-void MyApplication::handleRequest(const Wt::Http::Request& request, Wt::Http::Response& response)
+void CalculatorApp::calculate()
 {
-    int num1 = std::stoi(num1_->text().toUTF8());
-    int num2 = std::stoi(num2_->text().toUTF8());
-    int resultado = num1 + num2;
-    
-    response.setMimeType("text/html");
-    response.out() << "<html><body>Su resultado es: " << resultado << "</body></html>";
+    // Get the numbers from the UI
+    double firstNumber = std::stod(firstNumberEdit_->text().toUTF8());
+    double secondNumber = std::stod(secondNumberEdit_->text().toUTF8());
+
+    // Calculate the result
+    double result = firstNumber + secondNumber;
+
+    // Update the UI with the result
+    resultText_->setText("Result: " + std::to_string(result));
 }
 
-int main(int argc, char **argv)
+int main(int argc, char** argv)
 {
     return Wt::WRun(argc, argv, [](const Wt::WEnvironment& env) {
-        return new MyApplication(env);
+        return std::make_unique<CalculatorApp>(env);
     });
 }
